@@ -1,0 +1,9 @@
+class Lighting{
+    constructor(){
+
+    }
+
+    update(){
+        
+    }
+}
