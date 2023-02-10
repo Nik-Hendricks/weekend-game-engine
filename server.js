@@ -48,6 +48,7 @@ app.get('*', (req, res) => {
 
 httpServer.listen(80);
 
+
 function getFilesizeInBytes(filename) {
     const stats = fs.statSync(filename)
     const fileSizeInBytes = stats.size

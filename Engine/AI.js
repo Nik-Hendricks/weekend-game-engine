@@ -1,6 +1,16 @@
 class AI{
     constructor(entity){
-        
+        this.states = {
+            "idle":{
+
+            },
+            "searching":{
+
+            },
+            "running":{
+                
+            }
+        }
     }
 
     update(entity, deltaTime){

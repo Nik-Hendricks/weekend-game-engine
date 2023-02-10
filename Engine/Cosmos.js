@@ -5,6 +5,7 @@ import {PhysicalObject, Physics} from '/Engine/Physics.js'
 import Camera from '/Engine/Camera.js';
 import AI from '/Engine/AI.js';
 import GameLoop from '/Engine/GameLoop.js';
+import Vec2 from '/Engine/Vec2.js'
 
 class Cosmos{
     constructor(){
@@ -20,9 +21,10 @@ class Cosmos{
         this.physics = new Physics();
         this.GameLoop = new GameLoop();
         this.AI = new AI();
-        this.rendersize = [this.canvas.width, this.canvas.height];
+        this.rendersize = new Vec2(this.canvas.width, this.canvas.height);
         this.follow_entity = false;
         this.control_entity = false;
+        this.renderedEntities = [];
     }
 
     start(logic, render){
@@ -45,6 +47,20 @@ class Cosmos{
 
     register_background(name){
         this.backgrounds[name] = this.parseImage(this.images[name], this.rasterizer.colors, this.rasterizer.color_map);
+    }
+
+    screenToGame(screen) {
+        var x = Math.floor((this.control_entity._get_midpoint().x - (this.rendersize.x / 2) + screen.x) / this.rasterizer.pixel_size)
+        var y = Math.floor((this.control_entity._get_midpoint().y - (this.rendersize.y / 2) + screen.y) / this.rasterizer.pixel_size)
+        return  [x, y];
+    }
+
+    gameToScreen(game) {
+        var game1 = (typeof game.x !== 'undefined') ? game.x : game.x;
+        var game2 = (typeof game.y !== 'undefined') ? game.y : game.y;
+        var x = (game1 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().x - (this.rendersize.x / 2));
+        var y = (game2 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().y - (this.rendersize.y / 2));
+        return new Vec2(Math.floor(x), Math.floor(y));
     }
 
     setup_canvas(){
@@ -84,8 +100,8 @@ class Cosmos{
                 var entity = entry[1]
                 entity.render(this);
                 var pos = entity.position
-                if(pos[0] + entity.sprite.data.length >= start[0] && pos[0] <= end[0]){
-                    if(pos[1] + entity.sprite.data[0].length >= start[1] && pos[1] <= end[1]){
+                if(pos.x + entity.sprite.data.length  >= start.x && pos.x <= end.x){
+                    if(pos.y + entity.sprite.data[0].length >= start.y && pos.y <= end.y){
                         ret[entity.uuid] = entity
                     }
                 }

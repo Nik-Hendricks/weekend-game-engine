@@ -1,7 +1,9 @@
 import Sprite from '/Engine/Sprite.js'
+import Vec2 from '/Engine/Vec2.js'
 
 class Entity{
     constructor(props){
+        this.props = props;
         this.uuid = (typeof props.uuid !== 'undefined') ? props.uuid : Math.random();
         this.sprite = (typeof props.sprite !== 'undefined') ? props.sprite : [['wht']];
         this.phys_obj = (typeof props.phys_obj !== 'undefined') ? props.phys_obj : null;
@@ -10,9 +12,9 @@ class Entity{
         this.hasAI = (typeof props.hasAI !== 'undefined') ? props.hasAI : false;
         this.ai_type = (typeof props.ai_type !== 'undefined') ? props.ai_type : false; 
         this.original_sprite = props.sprite;
-        this.initial_position = props.position
-        this._position = props.position
-        this.pixel_size = 0;
+        this.position = new Vec2(props.position)
+        this.pixel_size = (typeof props.pixel_size !== 'undefined') ? props.pixel_size : 0;
+        this.clone_count = 0;
     }
 
     get direction_vec(){
@@ -27,24 +29,33 @@ class Entity{
         this.accel_vec = vec;
     }
 
-    get position(){
-        return [this._position[0] * this.pixel_size, this._position[1] * this.pixel_size];
+    get render_position(){
+        return new Vec2(this.position.x * this.pixel_size, this.position.y * this.pixel_size)
     }
 
-    set position(value){
-        this._position = value;
+
+    _get_render_midpoint(){
+        return new Vec2(this.render_position.x + this._get_render_size().x / 2, this.render_position.y + this._get_render_size().y / 2)
     }
 
-    _get_size_x(){
-        return this.sprite.data[0].length * this.pixel_size;
+    _get_render_size(){
+        return new Vec2(this.sprite.data[0].length * this.pixel_size, this.sprite.data.length * this.pixel_size)
+    }
+
+    _get_sprite_midpoint(){
+        return new Vec2(this._get_size().x / 2, this._get_size().y / 2)
+    }
+
+    _get_sprite_render_midpoint(){
+        return new Vec2(this._get_render_size().x / 2, this._get_render_size().y / 2)
     }
 
     _get_midpoint(){
-        return [this.position[0] + this._get_size_x() / 2, this.position[1] + this._get_size_y() / 2]
+        return new Vec2(this.position.x + this._get_size().x / 2, this.position.y + this._get_size().y / 2)
     }
 
-    _get_size_y(){
-        return this.sprite.data.length * this.pixel_size;
+    _get_size(){
+        return new Vec2 (this.sprite.data[0].length, this.sprite.data.length)
     }
 
     update(Engine, deltaTime){
@@ -77,6 +88,13 @@ class Entity{
 
     destroy(){
 
+    }
+
+    clone(){
+        var p = this.props
+        p.uuid = `${this.uuid}_clone${this.clone_count}`
+        this.clone_count++
+        return new Entity(this.props);
     }
 }
 

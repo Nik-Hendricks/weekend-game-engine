@@ -9,7 +9,7 @@ class AsteroidGenerator {
             var randY =  getRandomInt(-500, 500)
             var randAX =  getRandomInt(-100, 100)
             var randAY =  getRandomInt(-100, 100)
-            new Asteroid(Engine, i, [randX, randY], new PhysicalObject({acceleration:[randAX, randAY], direction_vec: [randAX, randAY]}))
+            new Asteroid(Engine, i, [randX, randY], new PhysicalObject({acceleration:[randAX, randAY], direction_vec: [randAX, randAY]}, Entity))
         }
     }
 }
