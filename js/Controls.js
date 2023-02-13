@@ -1,4 +1,5 @@
 import PlayerControls from '/Engine/PlayerControls.js'
+import Vec2 from '/Engine/Vec2.js';
 
 export default class Controls{
     constructor(){

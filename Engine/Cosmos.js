@@ -50,14 +50,17 @@ class Cosmos{
     }
 
     screenToGame(screen) {
-        var x = Math.floor((this.control_entity._get_midpoint().x - (this.rendersize.x / 2) + screen.x) / this.rasterizer.pixel_size)
-        var y = Math.floor((this.control_entity._get_midpoint().y - (this.rendersize.y / 2) + screen.y) / this.rasterizer.pixel_size)
+        var screenx = (typeof screen.x !== 'undefined') ? screen.x : screen[0];
+        var screeny = (typeof screen.y !== 'undefined') ? screen.y : screen[1];
+
+        var x = Math.floor((this.control_entity._get_midpoint().x - (this.rendersize.x / 2) + screenx) / this.rasterizer.pixel_size)
+        var y = Math.floor((this.control_entity._get_midpoint().y - (this.rendersize.y / 2) + screeny) / this.rasterizer.pixel_size)
         return  [x, y];
     }
 
     gameToScreen(game) {
-        var game1 = (typeof game.x !== 'undefined') ? game.x : game.x;
-        var game2 = (typeof game.y !== 'undefined') ? game.y : game.y;
+        var game1 = (typeof game.x !== 'undefined') ? game.x : game[0];
+        var game2 = (typeof game.y !== 'undefined') ? game.y : game[1];
         var x = (game1 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().x - (this.rendersize.x / 2));
         var y = (game2 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().y - (this.rendersize.y / 2));
         return new Vec2(Math.floor(x), Math.floor(y));

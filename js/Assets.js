@@ -80,6 +80,18 @@ export const GameSprites = [
         name:'ship2',
         data:ship2,
     },
+    {
+        name:'ShipManageButton1',
+        src:'/images/ShipManageButton1.png'
+    },
+    {
+        name:'AutomationButton1',
+        src:'/images/AutomationButton1.png'
+    },
+    {
+        name:'InventoryButton1',
+        src:'/images/InventoryButton1.png'
+    }
 ]
 
 
