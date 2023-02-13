@@ -1,5 +1,116 @@
 import Rasterizer from '/Engine/Rasterizer.js'
 import Sprite from '/Engine/Sprite.js'
+import Text from '/Engine/GUI/Text.js';
+
+function generateOutline(width, height, color, color2) {
+    const topRight = [
+        [color,color,'0'],
+        [color2,color,color],
+        [color2,color2,color],
+    ];
+    const bottomRight = [  
+        [color2,color2,color],
+        [color2,color,color],
+        [color,color,color],
+        [color,color,'0'],
+    ];
+    const topLeft = [
+        ['0',color,color],
+        [color,color,color2],
+        [color,color2,color2],
+    ];
+    const bottomLeft = [          
+        [color,color2,color2],
+        [color,color,color2],
+        [color,color,color],
+        ['0',color,color],
+    ];
+    
+    const pixelArray = [];
+    for (let i = 0; i < height; i++) {
+        const row = new Array(width).fill(color2);
+        for (let j = 0; j < width; j++) {
+            
+
+
+            //roof
+            if(j > 0 && j < width && i < 1){
+                row[j] = color;
+            }
+
+            //floor
+            if(j > 0 && j < width && i > height -3){
+                row[j] = color;
+            }
+
+            //side walls
+            if(j<1 || j > width -2){
+                row[j] = color
+            }
+
+            //top left
+            if(j < 3 && i < 3){
+                row[j] = topLeft[i][j];
+            }
+            //bottom left
+            if (i >= height - 4 && j < 3) {
+                row[j] = bottomLeft[4 - (height - i)][j];
+            }
+            //top right
+            if (i < 3 && j >= width - 3) {
+                row[j] = topRight[i][2 - (width - j - 1)];
+            }
+            //bottom right
+            if (i >= height - 4 && j >= width - 3) {
+                row[j] = bottomRight[3 - (height - i - 1)][2 - (width - j - 1)];
+            }
+        }
+        pixelArray.push(row);
+    }
+    return pixelArray;
+}
+
+function appendArray(x,y, arr, array){
+    var arrheight = arr[0].length
+    var arrwidth = arr.length
+    var arrayheight = array[0].length
+    var arraywidth = array.length
+
+    var startX = x;
+    var startY = y;
+    var endX = arraywidth + x;
+    var endY = arrayheight + y;
+
+    //console.log(`startX: ${startX} startY: ${startY} endX: ${endX} endY: ${endY}`)
+    for(var i = startY; i < endY; i++){
+        for(var j = startX; j < endX; j++){
+            if(array[j-x][i-y] !== '0'){
+                arr[j][i] = array[j - x][i - y]
+            }
+        }
+    }
+
+    return arr;
+}
+
+function build_grid(sizex, sizey, element_size){
+    var state = true;
+    var size = [sizex, sizey]
+    var element_size = [element_size, element_size];
+    var normalized_size = [size[0] * element_size[0], size[1] * element_size[1]]
+    var arr = new Array(normalized_size[1] + 1).fill('0').map(() => new Array(normalized_size[0]).fill('0'));
+    for(var x = 0; x <= normalized_size[0]; x += element_size[0]){
+        for(var y = 0; y < normalized_size[1]; y++){
+            arr[y][x] = 'wht'
+        }
+    }
+    for(var x = 0; x <= normalized_size[0]; x++){
+        for(var y = 0; y <= normalized_size[1]; y += element_size[1]){
+            arr[y][x] = 'wht'
+        }
+    }
+    return arr
+}
 
 class GUI{
     constructor(){
@@ -11,9 +122,7 @@ class GUI{
     append(element){
         element.GUI = this;
         this.elements[element.uuid] = element
-        if(element.constructor.name !== 'ContainerElement'){
-            this.rasterizer.cache_img(element)
-        }
+        this.rasterizer.cache_img(element)
     }
 
     update(controls){
@@ -75,7 +184,7 @@ class GUI{
 class GUIElement{
     constructor(props){
         this.transparency = (typeof props.transparency !== 'undefined') ? props.transparency : 1;
-        this.background_color = (typeof props.background_color !== 'undefined') ? props.background_color : 'drkgry';
+        this.background_color = (typeof props.background_color !== 'undefined') ? props.background_color : 'litegry';
         this.position_type = 'absolute'
         this._position = (typeof props.position !== 'undefined') ? props.position : [0, 0];
         this.data = props.data;
@@ -113,6 +222,7 @@ class GUIElement{
 
     draw(GUI, ctx){
         ctx.save();
+        ctx.globalAlpha = this.transparency;
         if(GUI.rasterizer.get_cached_img(this).src.length > 6){
             ctx.drawImage(GUI.rasterizer.get_cached_img(this), this.position[0] * this.GUI.rasterizer.pixel_size, this.position[1] * this.GUI.rasterizer.pixel_size);
         }
@@ -132,6 +242,7 @@ class ContainerElement extends GUIElement{
         this.title = (typeof props.title !== 'undefined') ? props.title : 'window';
         this.onopen = (typeof props.onopen !== 'undefined') ? props.onopen : undefined;
         this.isDragging = false;
+        this.data = this.create()
     }   
 
     get elements(){
@@ -146,7 +257,7 @@ class ContainerElement extends GUIElement{
     }
 
     create(){
-        return new Array(this.height).fill(null).map(() => new Array(this.width).fill('drkcobolt'));
+        return generateOutline(this.width, this.height, 'drkogry', this.background_color)
     }
 
     close(){
@@ -172,13 +283,34 @@ class ContainerElement extends GUIElement{
     draw(GUI, ctx){
         ctx.save();
         ctx.globalAlpha = this.transparency;
-        ctx.fillStyle = GUI.rasterizer.colors[GUI.rasterizer.color_map.indexOf(this.background_color) + 1]
-        ctx.beginPath()
-        ctx.rect(this.position[0] * GUI.rasterizer.pixel_size, this.position[1] * GUI.rasterizer.pixel_size, this.width * GUI.rasterizer.pixel_size, this.height * GUI.rasterizer.pixel_size)
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        if(GUI.rasterizer.get_cached_img(this).src.length > 6){
+            ctx.drawImage(GUI.rasterizer.get_cached_img(this), this.position[0] * this.GUI.rasterizer.pixel_size, this.position[1] * this.GUI.rasterizer.pixel_size);
+        }
         ctx.restore();
     }
 }
 
-export{GUI, GUIElement, ContainerElement}
+class ButtonElement extends GUIElement{
+    constructor(props){
+        super(props)
+        this.text = props.text
+        this.create()
+    }
+
+    create(){
+        this.data = generateOutline(this.width, this.height, 'drkogry', 'litegry')
+        var text = new Text({text:this.text, color:'blk'})
+        var x = (this.data[0].length / 2) - (text[0].length /2)
+        var y = (this.data.length / 2) - (text.length / 2)
+        this.data = appendArray(y, x, this.data, text)
+    }
+} 
+
+class TextAreaElement extends GUIElement{
+    constructor(props){
+        super(props)
+    }
+    
+}
+
+export{GUI, GUIElement, ContainerElement, ButtonElement}

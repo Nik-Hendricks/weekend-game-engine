@@ -8,7 +8,7 @@ export class Rasterizer{
     }
 
     cache_img(data){
-        if(data.constructor.name == 'GUIElement' || data.constructor.name == 'ContainerElement'){
+        if(data.constructor.name == 'GUIElement' || data.constructor.name == 'ContainerElement' || data.constructor.name == 'ButtonElement'){
             this.cached_images[data.uuid] = this.create_img(data.data)
         }else{
             this.cached_images[data.uuid] = this.create_img(data.sprite.data);

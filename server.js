@@ -34,6 +34,14 @@ app.get('/js/:file', (req, res) => {
       res.sendFile(`./js/${req.params.file}`, {root: './'})
 })
 
+app.get('/js/Scenes/:file', (req, res) => {
+    res.header({
+        'Content-Type': 'text/javascript',
+        'Content-Size': getFilesizeInBytes(`./js/Scenes/${req.params.file}`)
+      });
+      res.sendFile(`./js/Scenes/${req.params.file}`, {root: './'})
+})
+
 app.get("/images/:file",function(req, res){
     res.header({
       'Content-Type': 'image/png',
