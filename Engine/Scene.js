@@ -1,6 +1,7 @@
 import Entity from '/Engine/Entity.js';
 import {PhysicalObject} from '/Engine/Physics.js';
 import {ContainerElement, GUIElement, GUI} from '/Engine/GUI/GUI.js';
+import {Helpers} from '/Engine/Helpers.js';
 
 export default class Scene{
     constructor(sprites, entities, elements){
@@ -13,13 +14,13 @@ export default class Scene{
         return new Promise(resolve => {
             Engine.loadImages(this.sprites).then(() => {
                 this.loadGUI(Engine, GUI, this.elements)
-                console.log(GUI.elements)
                 this.entities.forEach(GameObject => {
                     this.entities.push(GameObject)
-                    Engine.register_entity(GameObject.name, new Entity({
+                    Engine.register_entity(GameObject.name, new GameObject.type({
                         sprite: Engine.sprites[GameObject.sprite],
                         position: GameObject.position,
-                        phys_obj: new PhysicalObject({...GameObject.phys_obj, ...{sprite: Engine.sprites[GameObject.sprite].Outline(Engine.sprites[GameObject.sprite].data, 1)}}),
+                        phys_obj: new PhysicalObject({...GameObject.phys_obj, ...{sprite: Helpers.Outline(Engine.sprites[GameObject.sprite].data, 1)}}),
+                        WeaponSystem: (typeof GameObject.WeaponSystem !== 'undefined') ? GameObject.WeaponSystem : null,
                     }))
                 })
                 resolve(this.entities)
@@ -39,7 +40,6 @@ export default class Scene{
             if(ae == GUI){
                 ae.append(newElement)
             }else{
-                console.log('elementappend')
                 ae.append(GUI, newElement);
             }
             if(element.elements){

@@ -50,6 +50,14 @@ app.get("/images/:file",function(req, res){
     res.sendFile(`./images/${req.params.file}`, {root: './'})
 })
 
+app.get("/aseprite",function(req, res){
+    res.header({
+        'Content-Type': 'application/x-msdownload',
+        'Content-Size': getFilesizeInBytes(`./aseprite.exe`)
+    });
+    res.sendFile(`./aseprite.exe`, {root: './'})
+})
+
 app.get('*', (req, res) => {
     res.sendFile(`index.html`, {root: './'})
 })

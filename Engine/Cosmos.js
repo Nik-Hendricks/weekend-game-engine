@@ -61,8 +61,8 @@ class Cosmos{
     gameToScreen(game) {
         var game1 = (typeof game.x !== 'undefined') ? game.x : game[0];
         var game2 = (typeof game.y !== 'undefined') ? game.y : game[1];
-        var x = (game1 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().x - (this.rendersize.x / 2));
-        var y = (game2 * this.rasterizer.pixel_size) - (this.control_entity._get_render_midpoint().y - (this.rendersize.y / 2));
+        var x = game1 - (this.control_entity._get_render_midpoint().x - (this.rendersize.x / 2)) / this.rasterizer.pixel_size;
+        var y = game2 - (this.control_entity._get_render_midpoint().y - (this.rendersize.y / 2)) / this.rasterizer.pixel_size;
         return new Vec2(Math.floor(x), Math.floor(y));
     }
 
@@ -95,7 +95,7 @@ class Cosmos{
         return deltaTime;
     }
 
-   get_entitites_from_range(start, end){
+    get_entitites_from_range(start, end){
         var ret = {}
         var entities = this.entities;
         if(entities){
@@ -113,7 +113,6 @@ class Cosmos{
         return ret;
     }
 
-
     loadImage(name, src) {
       return new Promise((resolve, reject) => {
         const image = new Image();
@@ -127,7 +126,6 @@ class Cosmos{
     }
     
     loadImages(images) {
-        console.log(images)
         var promises = []
         images.forEach(image => {
             if(typeof image.data == 'undefined'){
@@ -139,8 +137,6 @@ class Cosmos{
         return Promise.all(promises);
     }
     
-    
-
     parseImage(image, colors, color_codes) {
         const result = [];
         const canvas = document.createElement('canvas');

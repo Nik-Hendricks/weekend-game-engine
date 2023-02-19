@@ -1,5 +1,6 @@
 import PlayerControls from '/Engine/PlayerControls.js'
 import Vec2 from '/Engine/Vec2.js';
+import {ButtonElement} from '/Engine/GUI/GUI.js'
 
 export default class Controls{
     constructor(){
@@ -11,7 +12,8 @@ export default class Controls{
         return this.Controls.input_data
     }
 
-    update(Engine, deltaTime){
+    update(Game, Engine, deltaTime){
+        this.hovered = Object.entries(Engine.get_entitites_from_range(new Vec2(Engine.screenToGame(this.input.mouse)), new Vec2(Engine.screenToGame(this.input.mouse))))
         var input = this.input
         var player = Engine.control_entity
 
@@ -59,6 +61,14 @@ export default class Controls{
             //inventory.toggle();
         
         }
+        if(input.c){
+            var shake = Engine.camera.enableShake;
+            if(shake){
+                Engine.camera.enableShake = false;
+            }else{
+                Engine.camera.enableShake = true;
+            }
+        }
         if(input.r){
             player.position = new Vec2(0, 0);
             player.phys_obj.acceleration = new Vec2(0, 0);
@@ -83,14 +93,35 @@ export default class Controls{
             }
         }
     
+ 
+        
+        
+        Game.updateRadar(this.hovered);
 
-    
-        if(input.mousedown == true){
-            //var entity = hovered[0][1]
-            //enter_ship(entity);
-            //console.log(input.mouse)
-    
+
+
+
+        if(input.rightClick){                                             
+            var entity;
+            if (this.hovered.length !== 0){
+                entity = this.hovered[0][1];
+                if(Game.ContextEntity == null){
+                    Game.ContextEntity = entity;
+                }
+                Game.GUI.elements['ContextMenu'].opened = true;
+            }
+            Game.updateContextMenu();
+        }else{
+            Game.GUI.elements['ContextMenu'].opened = false;
+            Game.ContextEntity = null;
         }
+        if(input.leftClick){
+            Game.GUI.elements['ContextMenu'].opened = false;
+            Game.ContextEntity = null;
+            input.rightClick = false;
+        }
+
+
 
     
         if(input.scroll >= 20){

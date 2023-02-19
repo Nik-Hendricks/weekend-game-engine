@@ -123,16 +123,17 @@ class GUI{
         element.GUI = this;
         this.elements[element.uuid] = element
         this.rasterizer.cache_img(element)
+        return element
     }
 
-    update(controls){
+    update(controls, Game){
         var x = controls.Controls.input_data.mouse / this.rasterizer.pixel_size;
         var y = controls.Controls.input_data.mouse / this.rasterizer.pixel_size;
-        if(controls.Controls.input_data.mousedown){
+        if(controls.Controls.input_data.leftClick){
             var es = Object.entries(this.get_elements_from_range(controls.Controls.input_data.mouse, controls.Controls.input_data.mouse));
             if(es.length > 0){
                 var e = es[es.length-1][1]
-                e.onclick(this);
+                e.onclick(this, Game);
             }
         }
     }
@@ -195,6 +196,7 @@ class GUIElement{
         this.opened = (typeof props.opened !== 'undefined') ? props.opened : true;
         this.pixel_size = (typeof props.pixel_size !== 'undefined') ? props.pixel_size : 2;
         this.onclick = (typeof props.onclick !== 'undefined') ? props.onclick : () => {console.log("MEOW >:(")};
+        this.elements = []
     }
 
 
@@ -231,8 +233,9 @@ class GUIElement{
 
     append(GUI, Element){
         Element.parentElement = this;
-        GUI.append(Element)
-        //this.elements[Element.uuid] = this
+        var e = GUI.append(Element)
+        this.elements[Element.uuid] = e
+        return e
     }
 }
 
@@ -245,16 +248,16 @@ class ContainerElement extends GUIElement{
         this.data = this.create()
     }   
 
-    get elements(){
-        var ret = [];
-        Object.entries(this.GUI.elements).forEach(el => {
-            var element = el[1];
-            if(element.parentElement == this && element.opened){
-                ret[element.uuid] = element;
-            }
-        })
-        return ret;
-    }
+    //get elements(){
+    //    var ret = [];
+    //    Object.entries(this.GUI.elements).forEach(el => {
+    //        var element = el[1];
+    //        if(element.parentElement == this && element.opened){
+    //            ret[element.uuid] = element;
+    //        }
+    //    })
+    //    return ret;
+    //}
 
     create(){
         return generateOutline(this.width, this.height, 'drkogry', this.background_color)

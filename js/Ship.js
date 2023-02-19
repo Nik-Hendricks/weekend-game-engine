@@ -3,12 +3,27 @@ import {PhysicalObject} from '/Engine/Physics.js'
 import Sprite from '/Engine/Sprite.js'
 
 class Ship extends Entity{
-    constructor(Engine, playerName, spriteName, position){
-        super({Engine: Engine, position:position, phys_obj: new PhysicalObject(), sprite: Engine.sprites[spriteName]})
-        Engine.register_entity(playerName, this)
+    constructor(props){
+        super(props)
         this.hasInteriorSprite = true;
         this.interiorSprite = new Sprite(this.generateInterior());
         this.systems = [];
+        this.contextItems = [
+            {
+                text:"Vieu Interior",
+                action: (GUI, Game) => {
+                    console.log("View Interior")
+                }
+            },
+            {
+                text: "Enter Ship",
+                action: (GUI, Game) => {
+                    console.log(Game)
+                    Game.Engine.control_entity = this;
+                    Game.Engine.follow_entity = this;
+                }
+            }
+        ]
     }
 
     addSystem(type, position){

@@ -1,6 +1,8 @@
+import {Helpers} from '/Engine/Helpers.js';
+
 class PlayerControls{
     constructor(){
-        this.MouseHelper = {leftClick: 0}
+        this.MouseHelper = {leftClick: 0, rightClick: 3}
         this.input_data = {mouse:[0, 0], scroll: 4, old_scroll:4}
         this.init();
     }
@@ -15,11 +17,31 @@ class PlayerControls{
             event.preventDefault();
             this.keyUpHandler(event)
         }, false);
-        window.addEventListener('mousedown', () => {
-            this.input_data.mousedown = true;
+        window.addEventListener('mousedown', (ev) => {
+            event.preventDefault();
+            switch (event.which) {
+                case 1:
+                    this.input_data.leftClick = true;
+                    break;
+                case 2:
+                    this.input_data.middleClick = true;
+                    break;
+                default:
+                    break;
+            }
         })
         window.addEventListener('mouseup', () => {
-            this.input_data.mousedown = false;
+            event.preventDefault();
+            switch (event.which) {
+                case 1:
+                    this.input_data.leftClick = false;
+                    break;
+                case 2:
+                    this.input_data.middleClick = false;
+                    break;
+                default:
+                    break;
+            }
         })
         window.addEventListener('mousemove', () => {
             this.mouseMoveHandler(event);
@@ -37,6 +59,20 @@ class PlayerControls{
                 this.callback(event)
             }
         })
+
+        window.oncontextmenu = (event) => {
+            event.preventDefault()
+            Helpers.runOnce(() => {
+                if(this.input_data.rightClick){
+                    this.input_data.rightClick = false;
+                }else{
+                    this.input_data.rightClick = true;
+                }  
+                if(this.callback){
+                    this.callback(event);
+                }
+            })()
+        }
      
     }
 

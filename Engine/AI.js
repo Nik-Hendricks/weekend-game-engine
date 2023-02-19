@@ -4,11 +4,14 @@ class AI{
             "idle":{
 
             },
-            "searching":{
+            "alert":{
 
             },
-            "running":{
+            "moving":{
                 
+            },
+            "dead":{
+
             }
         }
     }

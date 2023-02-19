@@ -39,5 +39,17 @@ export default class Vec2 {
 
     }
 
+    multiply(vec){
+      var x = (vec instanceof Vec2) ? vec.x : vec;
+      var y = (vec instanceof Vec2) ? vec.y : vec;
+      return new Vec2(this.x * x, this.y * y);
+    }
+
+    distance(vec){
+      var dx = this.x - vec.x;
+      var dy = this.y - vec.y;
+      return Math.sqrt(dx*dx + dy*dy);
+    }
+
   }
 

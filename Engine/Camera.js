@@ -1,6 +1,10 @@
 import Vec2 from '/Engine/Vec2.js';
 
+
 class Camera{
+    constructor() {
+        this.enableShake =false;
+    }
 
     update(Entity, Engine){
         if(Entity){
@@ -20,10 +24,13 @@ class Camera{
     }
 
     draw(Engine, Entity, FollowEntity){
-        var x = Entity.render_position.x - (FollowEntity.render_position.x - Engine.rendersize.x / 2) - (Entity._get_render_size().x / 2) 
-        var y = Entity.render_position.y - (FollowEntity.render_position.y - Engine.rendersize.y / 2) - (Entity._get_render_size().y / 2) 
-        var _x = Entity.render_position.x - (FollowEntity.render_position.x - Engine.rendersize.x / 2) 
-        var _y = Entity.render_position.y - (FollowEntity.render_position.y - Engine.rendersize.y / 2) 
+        var shakeX = Math.random() * 10 - 2.5;
+        var shakeY = Math.random() * 10 - 2.5;
+
+        var x = Entity.render_position.x - (FollowEntity.render_position.x - Engine.rendersize.x / 2) - (Entity._get_render_size().x / 2); //Rob fucked this up...
+        var y = Entity.render_position.y - (FollowEntity.render_position.y - Engine.rendersize.y / 2) - (Entity._get_render_size().y / 2);
+        var _x = Entity.render_position.x - (FollowEntity.render_position.x - Engine.rendersize.x / 2);
+        var _y = Entity.render_position.y - (FollowEntity.render_position.y - Engine.rendersize.y / 2);
 
         Engine.ctx.save();  
         Engine.ctx.translate(_x, _y);
@@ -32,7 +39,7 @@ class Camera{
         Engine.ctx.drawImage(Engine.rasterizer.get_cached_img(Entity), x, y); /**/
         Engine.ctx.restore();       
     }
-
-    
 }
 export default Camera
+
+//BYE...
