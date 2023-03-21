@@ -19,12 +19,14 @@ export default class Controls{
 
         if(this.movement_type == 'ship'){
             if(input.d){
-                Engine.control_entity.phys_obj.rotate(player.rotation + 5)
-                player.rotate(player.rotation + 5)
+                if(player.phys_obj.rotation_velocity < 5){
+                    player.phys_obj.rotation_velocity += .5;
+                }
             }
             if(input.a){
-                player.phys_obj.rotate(player.rotation - 5)
-                player.rotate(player.rotation - 5)
+                if(player.phys_obj.rotation_velocity > -5){
+                    player.phys_obj.rotation_velocity -= .5;
+                }
             }
             if(input.w){
                 player.phys_obj.acceleration.y += player.phys_obj.direction_vec.y * 100;
@@ -91,6 +93,10 @@ export default class Controls{
             }else{
                 accel.y -= 200
             }
+
+            if(player.phys_obj.rotation_velocity > 0){
+                player.phys_obj.rotation_velocity -= .5
+            }
         }
     
  
@@ -105,19 +111,17 @@ export default class Controls{
             var entity;
             if (this.hovered.length !== 0){
                 entity = this.hovered[0][1];
-                if(Game.ContextEntity == null){
-                    Game.ContextEntity = entity;
+                if(Game.ContextMenuManager.context_entity == null){
+                    Game.ContextMenuManager.context_entity = entity;
                 }
-                Game.GUI.elements['ContextMenu'].opened = true;
+                Game.ContextMenuManager.open(entity.position, entity)
             }
-            Game.updateContextMenu();
+            //Game.updateContextMenu();
         }else{
-            Game.GUI.elements['ContextMenu'].opened = false;
-            Game.ContextEntity = null;
+            Game.ContextMenuManager.close();
         }
         if(input.leftClick){
-            Game.GUI.elements['ContextMenu'].opened = false;
-            Game.ContextEntity = null;
+            Game.ContextMenuManager.close();
             input.rightClick = false;
         }
 

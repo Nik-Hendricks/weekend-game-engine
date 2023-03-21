@@ -439,16 +439,6 @@ export const GUIElements = [
         background_color:'blk',
         opened:true,
     },
-    {
-        uuid:"ContextMenu",
-        type:ContainerElement,
-        width:80,
-        height:120,
-        position:[100,100],
-        transparency:.5,
-        background_color:'drkgry',
-        opened:false,
-    }
 ]
 
 export const GameItems = [

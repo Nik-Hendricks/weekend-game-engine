@@ -12,8 +12,10 @@ import Vec2 from '/Engine/Vec2.js';
 import Scene from '/Engine/Scene.js';
 import {Helpers} from '/Engine/Helpers.js';
 
+
 import Ship from '/js/Ship.js';
 
+import ContextMenuManager from '/js/ContextMenuManager.js';
 import DevScene from '/js/Scenes/DevScene.js'
 
 
@@ -22,6 +24,7 @@ class Game{
         this.Engine = new Cosmos();
         this.GUI = new GUI();
         this.Controls = new Controls();
+        this.ContextMenuManager = new ContextMenuManager(this);
         this.currentSector = [0, 0];
         this.movement_type = 'ship'
         this.ContextEntity = null;
@@ -71,6 +74,7 @@ class Game{
             this.currentSector = [Math.floor(this.Engine.follow_entity._get_midpoint().x / (100 * this.Engine.rasterizer.pixel_size)), Math.floor(this.Engine.follow_entity._get_midpoint().y / (100 * this.Engine.rasterizer.pixel_size))]
             this.updateEntities(ev);
             this.GUI.update(this.Controls, this)
+            this.ContextMenuManager.update(this)
         }, () => {
             //render
             this.Engine.clear_screen();
@@ -80,7 +84,7 @@ class Game{
 
             this.GUI.elements['hud'].update(this.GUI)
             this.updateShipStatus()
-            //this.Engine.physics.draw(this.Engine)
+            this.Engine.physics.draw(this.Engine)
         });
     }
 
@@ -105,47 +109,6 @@ class Game{
             var y = (100 / 2) - (radaredEntity.sprite.data.length /2)
             radar_el.append(this.GUI, new GUIElement({uuid:'RadarShip',position:[x, y], data:radaredEntity.sprite.data, }))
         }
-    }
-
-    updateContextMenu(){
-            var context_menu = this.GUI.elements['ContextMenu'];
-            var y_offset = 5;
-        
-            if(this.ContextEntity !== null){
-                if(this.ContextEntity.contextItems){
-                // Calculate the position of the entity in the game world
-                var gameX = this.ContextEntity.position.x;
-                var gameY = this.ContextEntity.position.y;
-
-                // Calculate the position of the camera in the game world
-                var cameraX = this.Engine.follow_entity.position.x;
-                var cameraY = this.Engine.follow_entity.position.y;
-
-                // Calculate the position of the entity on the screen, taking into account the difference in pixel size between the game entities and the GUI elements
-                var screenX = (gameX - cameraX) * this.GUI.rasterizer.pixel_size / this.Engine.rasterizer.pixel_size;
-                var screenY = (gameY - cameraY) * this.GUI.rasterizer.pixel_size / this.Engine.rasterizer.pixel_size;
-
-                // Adjust the position of the entity on the screen to take into account the size of the entity
-                screenX -= this.ContextEntity._get_render_size().x / 2;
-                screenY -= this.ContextEntity._get_render_size().y / 2;
-
-
-                    context_menu.position = [screenX, screenY];
-                    this.ContextEntity.contextItems.forEach(contextItem =>{
-                        context_menu.elements = [];
-                        //context_menu.append(this.GUI, new ButtonElement({
-                        //    position: [5, y_offset],
-                        //    text: contextItem.text,
-                        //    width:70,
-                        //    height:16,awd
-                        //    onclick: contextItem.action,
-                        //}))
-                        y_offset += 20;
-                    })
-                }
-            }
-            
-        
     }
 }
 

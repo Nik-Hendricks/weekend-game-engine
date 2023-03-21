@@ -11,6 +11,7 @@ export class PhysicalObject{
         this.input_force = new Vec2(this.acceleration.x * this.mass, this.acceleration.y * this.mass);
         this.velocity = new Vec2(this.input_force.x * 0, this.input_force.y * 0);
         this.polygon = new Polygon(props.sprite)
+        this.rotation_velocity = 0;
         //console.log(this.shape)
     }
 
@@ -32,10 +33,10 @@ export class Physics{
 
     update(Engine, entity, deltaTime){
         if(entity.phys_obj){
-            this.applyForce(entity.phys_obj)
-            var ix = entity.position.x + entity.phys_obj.input_force.x * deltaTime;
-            var iy = entity.position.y + entity.phys_obj.input_force.y * deltaTime;
-            entity.position = new Vec2(ix, iy)
+            this.applyForce(entity, deltaTime)
+            entity.phys_obj.rotate(entity.rotation + entity.phys_obj.rotation_velocity)
+            entity.rotate(entity.rotation + entity.phys_obj.rotation_velocity)
+            console.log(entity.rotation)
             //entity.phys_obj.polygon.vertices = entity.phys_obj.polygon.translate(entity.phys_obj.polygon.vertices, [0, 0])
         }
     }
@@ -72,8 +73,15 @@ export class Physics{
           }
     }
 
-    applyForce(physical_object){
-        physical_object.input_force = new Vec2(Math.floor(physical_object.acceleration.x * physical_object.mass), Math.floor(physical_object.acceleration.y * physical_object.mass));
+    applyForce(Entity, deltaTime){
+        Entity.phys_obj.input_force = new Vec2(Math.floor(Entity.phys_obj.acceleration.x * Entity.phys_obj.mass), Math.floor(Entity.phys_obj.acceleration.y * Entity.phys_obj.mass));
+        //Entity.rotate(Entity.rotation + Entity.phys_obj.rotation_velocity)
+        var ix = Entity.position.x + Entity.phys_obj.input_force.x * deltaTime;
+        var iy = Entity.position.y + Entity.phys_obj.input_force.y * deltaTime;
+
+
+        //entity.rotation = 
+        Entity.position = new Vec2(ix, iy)
     }
 
     rotate2dArray(array, angle, center) {
